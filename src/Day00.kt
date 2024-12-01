@@ -8,7 +8,7 @@ fun main() {
     }
 
     val testInput = readInput("Day00_test")
-    check(part1(testInput) == 1)
+    checkEquals(1, part1(testInput))
 
     val input = readInput("Day00")
     println(part1(input))
