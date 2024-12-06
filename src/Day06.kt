@@ -31,8 +31,8 @@ fun main() {
     }
 
     // Tracks guard until leaves bounds or loops
-    // Returns Pair, isLoop and unique visit count
-    fun trackGuard(obstructions: Set<Coordinates>, guard: Guard, maxBounds: Coordinates): Pair<Boolean, Int> {
+    // Returns Pair, isLoop and visited states
+    fun trackGuard(obstructions: Set<Coordinates>, guard: Guard, maxBounds: Coordinates): Pair<Boolean, Set<Coordinates>> {
         val visited = mutableSetOf<Guard>()
         var movingGuard = guard
 
@@ -45,15 +45,15 @@ fun main() {
             }
         }
 
-        return Pair(visited.contains(movingGuard), visited.map(Guard::position).toSet().count())
+        return Pair(visited.contains(movingGuard), visited.map(Guard::position).toSet())
     }
 
     fun part1(input: List<String>): Int {
         val (obstructions, guard) = parse(input)
 
-        val (_, result) = trackGuard(obstructions, guard, Coordinates(input.size, input[0].length))
+        val (_, visited) = trackGuard(obstructions, guard, Coordinates(input.size, input[0].length))
 
-        return result
+        return visited.count()
     }
 
     fun part2(input: List<String>): Int {
@@ -77,11 +77,33 @@ fun main() {
         return count
     }
 
+    fun part2Optimized(input: List<String>): Int {
+        val (obstructions, guard) = parse(input)
+        val maxBounds = Coordinates(input.size, input[0].length)
+
+        val (_, guardPath) = trackGuard(obstructions, guard, Coordinates(input.size, input[0].length))
+
+        var count = 0
+        for (current in guardPath) {
+            if (!obstructions.contains(current)) {
+                val newSet = obstructions + current
+                val (isLoop, _) = trackGuard(newSet, guard, maxBounds)
+                if (isLoop) {
+                    count += 1
+                }
+            }
+        }
+
+        return count
+    }
+
     val testInput = readInput("Day06_test")
     checkEquals(41, part1(testInput))
     checkEquals(6, part2(testInput))
+    checkEquals(6, part2Optimized(testInput))
 
     val input = readInput("Day06")
     println(part1(input))
     println(timeIt{part2(input)})
+    println(timeIt{part2Optimized(input)})
 }
