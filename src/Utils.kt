@@ -66,6 +66,10 @@ data class Coordinates(
         return add(direction.toCoordinates())
     }
 
+    fun subtract(other: Coordinates): Coordinates {
+        return Coordinates(this.row - other.row, this.col - other.col)
+    }
+
     fun manhattanDistance(other: Coordinates): Int {
         return abs(this.row - other.row) + abs(this.col - other.col)
     }
